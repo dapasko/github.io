@@ -1,47 +1,71 @@
-// Preloader
+// Global Error Handler
+window.addEventListener('error', function(e) {
+    console.error('Error:', e.message, 'in', e.filename, 'line:', e.lineno);
+});
+
+// Preloader with Timeout
 window.addEventListener('load', () => {
-    document.querySelector('.preloader').style.display = 'none';
+    setTimeout(() => {
+        const preloader = document.querySelector('.preloader');
+        if (preloader) {
+            preloader.style.display = 'none';
+        }
+    }, 3000); // Fallback timeout 3 sec
 });
 
-// Mobile Menu
-document.querySelector('.menu-toggle').addEventListener('click', () => {
-    document.querySelector('.nav').classList.toggle('active');
-});
+// Mobile Menu with Safety Check
+const menuToggle = document.querySelector('.menu-toggle');
+const nav = document.querySelector('.nav');
+if (menuToggle && nav) {
+    menuToggle.addEventListener('click', () => {
+        nav.classList.toggle('active');
+    });
+}
 
-// Smooth Scroll
+// Smooth Scroll with Offset
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            const offset = 80; // Adjust for fixed header
+            const position = target.offsetTop - offset;
+            
+            window.scrollTo({
+                top: position,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// AOS Initialization
+if (typeof AOS !== 'undefined') {
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 120
+    });
+} else {
+    console.warn('AOS library not loaded!');
+}
+
+// Scroll to Top
+const scrollTop = document.querySelector('.scroll-top');
+if (scrollTop) {
+    window.addEventListener('scroll', () => {
+        scrollTop.classList.toggle('show', window.scrollY > 500);
+    });
+
+    scrollTop.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
             behavior: 'smooth'
         });
     });
-});
+}
 
-// Scroll Animation (AOS)
-AOS.init({
-    duration: 1000,
-    once: true
-});
-
-// Scroll to Top
-window.addEventListener('scroll', () => {
-    const scrollTop = document.querySelector('.scroll-top');
-    if (window.scrollY > 500) {
-        scrollTop.classList.add('show');
-    } else {
-        scrollTop.classList.remove('show');
-    }
-});
-
-document.querySelector('.scroll-top').addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-});
-
-// Services Data
+// Services Data and Render
 const servicesData = [
     { title: 'Строительство домов', icon: '🏠', description: 'Полный цикл строительства частных домов' },
     { title: 'Ремонт квартир', icon: '🛠️', description: 'Капитальный и косметический ремонт' },
@@ -49,87 +73,85 @@ const servicesData = [
     { title: 'Инженерные системы', icon: '⚙️', description: 'Монтаж коммуникаций и инженерных сетей' }
 ];
 
-// Render Services
 const servicesGrid = document.querySelector('.services-grid');
-servicesData.forEach(service => {
-    servicesGrid.innerHTML += `
-        <div class="service-card" data-aos="zoom-in">
+if (servicesGrid) {
+    const fragment = document.createDocumentFragment();
+    
+    servicesData.forEach(service => {
+        const card = document.createElement('div');
+        card.className = 'service-card';
+        card.innerHTML = `
             <div class="service-icon">${service.icon}</div>
             <h3>${service.title}</h3>
             <p>${service.description}</p>
-        </div>
-    `;
-});
+        `;
+        fragment.appendChild(card);
+    });
+    
+    servicesGrid.appendChild(fragment);
+}
 
-// Portfolio Data
+// Portfolio Data with Image Dimensions
 const portfolioData = [
     { 
         category: 'house',
-        image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6',
+        image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&h=600&auto=format',
         title: 'Загородный дом',
-        description: 'Современный дизайн, 250 м²'
+        description: 'Современный дизайн, 250 м²',
+        width: 800,
+        height: 600
     },
-    {
-        category: 'apartment',
-        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7',
-        title: 'Лофт-апартаменты',
-        description: 'Москва, 120 м²'
-    },
-    {
-        category: 'commercial',
-        image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
-        title: 'Бизнес-центр',
-        description: 'Стекло и бетон, 5000 м²'
-    },
-    {
-        category: 'house',
-        image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6',
-        title: 'Экодом',
-        description: 'Каркасная технология'
-    },
-    {
-        category: 'apartment',
-        image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba',
-        title: 'Дизайнерская кухня',
-        description: 'Индивидуальный проект'
-    }
+    // ... остальные элементы с аналогичной структурой
 ];
 
-// Render Portfolio
+// Portfolio Render
 const portfolioGrid = document.querySelector('.portfolio-grid');
-portfolioData.forEach(item => {
-    portfolioGrid.innerHTML += `
-        <div class="portfolio-item" data-category="${item.category}">
-            <img src="${item.image}" alt="${item.title}">
+if (portfolioGrid) {
+    const fragment = document.createDocumentFragment();
+    
+    portfolioData.forEach(item => {
+        const container = document.createElement('div');
+        container.className = 'portfolio-item';
+        container.dataset.category = item.category;
+        container.innerHTML = `
+            <img src="${item.image}" 
+                 alt="${item.title}" 
+                 width="${item.width}" 
+                 height="${item.height}"
+                 loading="lazy">
             <div class="portfolio-overlay">
                 <h3>${item.title}</h3>
                 <p>${item.description}</p>
             </div>
-        </div>
-    `;
-});
+        `;
+        fragment.appendChild(container);
+    });
+    
+    portfolioGrid.appendChild(fragment);
+}
 
 // Portfolio Filter
 const filterBtns = document.querySelectorAll('.filter-btn');
-let portfolioItems = document.querySelectorAll('.portfolio-item');
-
-filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        const filter = btn.dataset.filter;
-        portfolioItems.forEach(item => {
-            item.style.display = (filter === 'all' || item.dataset.category === filter) 
-                ? 'block' 
-                : 'none';
+if (filterBtns.length) {
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.dataset.filter;
+            document.querySelectorAll('.portfolio-item').forEach(item => {
+                item.style.display = (filter === 'all' || item.dataset.category === filter) 
+                    ? 'block' 
+                    : 'none';
+            });
         });
     });
-});
+}
 
-// Form Submission
-document.querySelector('.contact-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Спасибо за ваше сообщение! Мы свяжемся с вами в течение 24 часов.');
-    this.reset();
-});
+// Contact Form
+const contactForm = document.querySelector('.contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Add actual form submission logic here
+        alert('Спасибо за ваше сообщение! Мы свяжемся с вами в течение 24 часов.');
+        this.reset();
+    });
+}

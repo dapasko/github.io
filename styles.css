@@ -240,6 +240,19 @@ body {
     opacity: 0.9;
 }
 
+/* About Section */
+.about {
+    padding: 5rem 0;
+}
+
+.about-text {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
 /* Contact Section */
 .contact-content {
     display: grid;
@@ -278,6 +291,15 @@ body {
     margin-bottom: 1rem;
     border: 1px solid #ddd;
     border-radius: 5px;
+}
+
+/* Footer */
+.footer {
+    background: var(--dark-color);
+    color: #fff;
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 3rem;
 }
 
 /* Scroll to Top */

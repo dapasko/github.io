@@ -89,4 +89,47 @@ const portfolioData = [
     },
     {
         category: 'apartment',
-        image:
+        image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+        title: 'Дизайнерская кухня',
+        description: 'Индивидуальный проект'
+    }
+];
+
+// Render Portfolio
+const portfolioGrid = document.querySelector('.portfolio-grid');
+portfolioData.forEach(item => {
+    portfolioGrid.innerHTML += `
+        <div class="portfolio-item" data-category="${item.category}">
+            <img src="${item.image}" alt="${item.title}">
+            <div class="portfolio-overlay">
+                <h3>${item.title}</h3>
+                <p>${item.description}</p>
+            </div>
+        </div>
+    `;
+});
+
+// Portfolio Filter
+const filterBtns = document.querySelectorAll('.filter-btn');
+let portfolioItems = document.querySelectorAll('.portfolio-item');
+
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const filter = btn.dataset.filter;
+        portfolioItems.forEach(item => {
+            item.style.display = (filter === 'all' || item.dataset.category === filter) 
+                ? 'block' 
+                : 'none';
+        });
+    });
+});
+
+// Form Submission
+document.querySelector('.contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Спасибо за ваше сообщение! Мы свяжемся с вами в течение 24 часов.');
+    this.reset();
+});
